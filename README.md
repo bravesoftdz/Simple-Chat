@@ -1,4 +1,4 @@
-<h1>Graphical YouTube-DL v2.1.1</h1>
+<h1>Simple Chat v1.0.3 (Beta)</h1>
 A small and portable chat system.
 
 <h2>Simple Chat v1.0.3 x64 (Beta)</h2>
