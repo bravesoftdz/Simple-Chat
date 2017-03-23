@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Simple Chat'
+  Caption = 'Simple Chat v1.0.3 x32 (Beta)'
   ClientHeight = 524
   ClientWidth = 820
   Color = clBtnFace
@@ -9798,17 +9798,31 @@ object Form1: TForm1
           ParentFont = False
           StyleElements = [seClient, seBorder]
         end
+        object lbl3: TLabel
+          Left = 16
+          Top = 14
+          Width = 207
+          Height = 19
+          Caption = '(DNS support coming soon!) '
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clRed
+          Font.Height = -16
+          Font.Name = 'Tahoma'
+          Font.Style = [fsItalic]
+          ParentFont = False
+          StyleElements = [seClient, seBorder]
+        end
         object edtip: TEdit
           Left = 16
-          Top = 16
+          Top = 39
           Width = 289
           Height = 27
           TabOrder = 0
-          TextHint = 'IP'
+          TextHint = 'IP ONLY!'
         end
         object edtport: TEdit
           Left = 16
-          Top = 64
+          Top = 79
           Width = 121
           Height = 27
           MaxLength = 4
@@ -9847,7 +9861,7 @@ object Form1: TForm1
           TabOrder = 4
           object edtconnectusername: TEdit
             Left = 16
-            Top = 48
+            Top = 32
             Width = 257
             Height = 27
             MaxLength = 15
@@ -9871,6 +9885,16 @@ object Form1: TForm1
             Caption = 'Chat log Settings'
             TabOrder = 2
             OnClick = btn4Click
+          end
+          object chkconnectsendonenter: TCheckBox
+            Left = 16
+            Top = 80
+            Width = 121
+            Height = 17
+            Caption = 'Send on Enter'
+            Checked = True
+            State = cbChecked
+            TabOrder = 3
           end
         end
       end
@@ -9953,7 +9977,7 @@ object Form1: TForm1
           Left = 16
           Top = 16
           Width = 217
-          Height = 185
+          Height = 218
           Caption = 'Settings'
           TabOrder = 0
           object edthostport: TEdit
@@ -9989,6 +10013,16 @@ object Form1: TForm1
             Caption = 'Log IP'#39's'
             TabOrder = 3
           end
+          object chkhostsendonenter: TCheckBox
+            Left = 16
+            Top = 184
+            Width = 129
+            Height = 17
+            Caption = 'Send on Enter'
+            Checked = True
+            State = cbChecked
+            TabOrder = 4
+          end
         end
         object btnhoststart: TButton
           Left = 16
@@ -10010,9 +10044,9 @@ object Form1: TForm1
         end
         object pnl5: TPanel
           Left = 6
-          Top = 207
+          Top = 240
           Width = 235
-          Height = 84
+          Height = 69
           TabOrder = 3
           object lbl2: TLabel
             Left = 1
@@ -10028,13 +10062,14 @@ object Form1: TForm1
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            ExplicitWidth = 194
+            ExplicitLeft = 0
+            ExplicitTop = 9
           end
           object lblconnectedusercount: TLabel
             Left = 1
             Top = 24
             Width = 233
-            Height = 59
+            Height = 44
             Align = alClient
             Alignment = taCenter
             Caption = '0'
@@ -10044,8 +10079,7 @@ object Form1: TForm1
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            ExplicitWidth = 19
-            ExplicitHeight = 42
+            ExplicitHeight = 57
           end
         end
       end
@@ -10145,6 +10179,10 @@ object Form1: TForm1
         Caption = 'Github Page'
         OnClick = GithubPage1Click
       end
+    end
+    object ReportaIssue1: TMenuItem
+      Caption = 'Report a Issue'
+      OnClick = ReportaIssue1Click
     end
     object About1: TMenuItem
       Caption = 'About'

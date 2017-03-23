@@ -1,3 +1,8 @@
+ {
+ Please don't be a dick and take the credit as your own.
+ I worked hard on it... Sorta...
+ }
+
 unit SimpleChat;
 
 interface
@@ -56,6 +61,10 @@ type
     Exit1: TMenuItem;
     GithubPage1: TMenuItem;
     About1: TMenuItem;
+    lbl3: TLabel;
+    chkconnectsendonenter: TCheckBox;
+    chkhostsendonenter: TCheckBox;
+    ReportaIssue1: TMenuItem;
     procedure btn4Click(Sender: TObject);
     procedure btn5Click(Sender: TObject);
     procedure btnconnectconnectClick(Sender: TObject);
@@ -82,8 +91,10 @@ type
     procedure mmohostChange(Sender: TObject);
     procedure edthostchatKeyPress(Sender: TObject; var Key: Char);
     procedure edtconnectchatsendKeyPress(Sender: TObject; var Key: Char);
+    procedure ReportaIssue1Click(Sender: TObject);
   private
     usercount : Integer;
+    userid : Integer;
   public
     { Public declarations }
   end;
@@ -109,9 +120,14 @@ end;
 
 procedure TForm1.btnconnectsendClick(Sender: TObject);
 begin
-  clntsckt1.Socket.SendText(edtconnectusername.Text + ': ' + edtconnectchatsend.Text);
-  mmoconnectchat.Lines.Add('Me: ' + edtconnectchatsend.Text);
-  edtconnectchatsend.Clear;
+  if Trim(edtconnectchatsend.Text) <> '' then
+    begin
+      clntsckt1.Socket.SendText(edtconnectusername.Text + ': ' + edtconnectchatsend.Text);
+      //mmoconnectchat.Lines.Add('Me: ' + edtconnectchatsend.Text);
+      edtconnectchatsend.Clear;
+    end
+  else
+    ShowMessage('You cannot send nothing... Don''t be shy!');
 end;
 
 procedure TForm1.btnhostsendClick(Sender: TObject);
@@ -119,12 +135,17 @@ var
   client: TCustomWinSocket;
   I : Integer;
 begin
-  for I := 0 to srvrsckt1.Socket.ActiveConnections-1 do
-  begin
-    srvrsckt1.Socket.Connections[I].SendText(edthostusername.Text + ': ' + edthostchat.Text);
-  end;
-  mmohost.Lines.Add('Me: ' + edthostchat.Text);
-  edthostchat.Clear;
+  if Trim(edthostchat.Text) <> '' then
+    begin
+      for I := 0 to srvrsckt1.Socket.ActiveConnections-1 do
+        begin
+          srvrsckt1.Socket.Connections[I].SendText(edthostusername.Text + ': ' + edthostchat.Text);
+        end;
+      mmohost.Lines.Add(edthostusername.Text + ': ' + edthostchat.Text);
+      edthostchat.Clear;
+    end
+  else
+    ShowMessage('Even if you are the host. You Cannot not send anything. Don''t be shy!');
 end;
 
 procedure TForm1.btnhoststartClick(Sender: TObject);
@@ -167,7 +188,7 @@ end;
 
 procedure TForm1.About1Click(Sender: TObject);
 begin
-  ShowMessage('Simple chat by Adriaan Boshoff');
+  ShowMessage('Simple chat by Adriaan Boshoff (Inforcer25)');
 end;
 
 procedure TForm1.btn4Click(Sender: TObject);
@@ -227,20 +248,26 @@ end;
 
 procedure TForm1.edtconnectchatsendKeyPress(Sender: TObject; var Key: Char);
 begin
-if ord(Key) = VK_RETURN then
-  begin
-    Key := #0; // prevent beeping
-    btnconnectsend.Click;
-  end;
+  if chkconnectsendonenter.Checked then
+    begin
+      if ord(Key) = VK_RETURN then
+        begin
+          Key := #0; // prevent beeping
+          btnconnectsend.Click;
+        end;
+    end;
 end;
 
 procedure TForm1.edthostchatKeyPress(Sender: TObject; var Key: Char);
 begin
-  if ord(Key) = VK_RETURN then
-  begin
-    Key := #0; // prevent beeping
-    btnhostsend.Click;
-  end;
+  if chkhostsendonenter.Checked then
+    begin
+      if ord(Key) = VK_RETURN then
+        begin
+          Key := #0; // prevent beeping
+          btnhostsend.Click;
+        end;
+    end;
 end;
 
 procedure TForm1.Exit1Click(Sender: TObject);
@@ -269,6 +296,12 @@ begin
   ShellExecute(self.WindowHandle,'open',PChar(url),nil,nil, SW_SHOWNORMAL);
 end;
 
+procedure TForm1.ReportaIssue1Click(Sender: TObject);
+begin
+  ShowMessage('You will now be taken to the github issues page. Please report a issue as it''s important to me');
+  OpenURL('https://github.com/Inforcer25/Simple-Chat/issues');
+end;
+
 procedure TForm1.srvrsckt1ClientConnect(Sender: TObject;
   Socket: TCustomWinSocket);
 begin
@@ -288,8 +321,17 @@ begin
 end;
 
 procedure TForm1.srvrsckt1ClientRead(Sender: TObject; Socket: TCustomWinSocket);
+var
+  I : Integer;
+  msg : string;
 begin
-  mmohost.Lines.Add(Socket.ReceiveText);
+  msg := Socket.ReceiveText;
+  mmohost.Lines.Add(msg);
+
+  for I := 0 to srvrsckt1.Socket.ActiveConnections-1 do
+  begin
+    srvrsckt1.Socket.Connections[I].SendText(msg);
+  end;
 end;
 
 end.
