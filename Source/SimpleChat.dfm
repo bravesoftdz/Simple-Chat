@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Simple Chat v1.0.3 x32 (Beta)'
+  Caption = 'Simple Chat v1.0.4 x32 (Beta)'
   ClientHeight = 524
   ClientWidth = 820
   Color = clBtnFace
@@ -9760,7 +9760,7 @@ object Form1: TForm1
     Top = 0
     Width = 820
     Height = 524
-    ActivePage = tshost
+    ActivePage = tsconnect
     Align = alClient
     TabOrder = 0
     object tsconnect: TTabSheet
@@ -9798,24 +9798,26 @@ object Form1: TForm1
           ParentFont = False
           StyleElements = [seClient, seBorder]
         end
-        object lbl3: TLabel
-          Left = 16
-          Top = 14
-          Width = 207
-          Height = 19
-          Caption = '(DNS support coming soon!) '
+        object lbl4: TLabel
+          Left = 216
+          Top = 17
+          Width = 88
+          Height = 16
+          Cursor = crHandPoint
+          Caption = 'Get FREE DNS '
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clRed
-          Font.Height = -16
+          Font.Color = clAqua
+          Font.Height = -13
           Font.Name = 'Tahoma'
-          Font.Style = [fsItalic]
+          Font.Style = [fsBold, fsItalic, fsUnderline]
           ParentFont = False
           StyleElements = [seClient, seBorder]
+          OnClick = lbl4Click
         end
         object edtip: TEdit
           Left = 16
           Top = 39
-          Width = 289
+          Width = 177
           Height = 27
           TabOrder = 0
           TextHint = 'IP ONLY!'
@@ -9828,6 +9830,7 @@ object Form1: TForm1
           MaxLength = 4
           NumbersOnly = True
           TabOrder = 1
+          Text = '4554'
           TextHint = 'Port'
         end
         object btnconnectconnect: TButton
@@ -9897,6 +9900,24 @@ object Form1: TForm1
             TabOrder = 3
           end
         end
+        object btnsave: TButton
+          Left = 199
+          Top = 72
+          Width = 106
+          Height = 34
+          Caption = 'Save Settings'
+          TabOrder = 5
+          OnClick = btnsaveClick
+        end
+        object btndns: TButton
+          Left = 199
+          Top = 39
+          Width = 107
+          Height = 27
+          Caption = 'Enter DNS'
+          TabOrder = 6
+          OnClick = btndnsClick
+        end
       end
       object pnl2: TPanel
         Left = 0
@@ -9937,6 +9958,9 @@ object Form1: TForm1
         Width = 496
         Height = 408
         Align = alClient
+        Lines.Strings = (
+          'Start of chat:'
+          '')
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 2
@@ -9987,6 +10011,7 @@ object Form1: TForm1
             Height = 27
             MaxLength = 4
             TabOrder = 0
+            Text = '4554'
             TextHint = 'Port'
           end
           object chkhostlogchat: TCheckBox
@@ -9999,15 +10024,16 @@ object Form1: TForm1
           end
           object edthostusername: TEdit
             Left = 16
-            Top = 136
+            Top = 104
             Width = 185
             Height = 27
             TabOrder = 2
+            Text = 'Server'
             TextHint = 'Username'
           end
           object chkhostlogip: TCheckBox
-            Left = 16
-            Top = 103
+            Left = 117
+            Top = 71
             Width = 97
             Height = 27
             Caption = 'Log IP'#39's'
@@ -10015,13 +10041,22 @@ object Form1: TForm1
           end
           object chkhostsendonenter: TCheckBox
             Left = 16
-            Top = 184
+            Top = 137
             Width = 129
             Height = 17
             Caption = 'Send on Enter'
             Checked = True
             State = cbChecked
             TabOrder = 4
+          end
+          object btn1: TButton
+            Left = 16
+            Top = 160
+            Width = 185
+            Height = 49
+            Caption = 'Change log font settings'
+            TabOrder = 5
+            OnClick = btn1Click
           end
         end
         object btnhoststart: TButton
@@ -10039,6 +10074,7 @@ object Form1: TForm1
           Width = 97
           Height = 55
           Caption = 'Stop Server'
+          Enabled = False
           TabOrder = 2
           OnClick = btnhoststopClick
         end
@@ -10062,8 +10098,7 @@ object Form1: TForm1
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            ExplicitLeft = 0
-            ExplicitTop = 9
+            ExplicitWidth = 194
           end
           object lblconnectedusercount: TLabel
             Left = 1
@@ -10079,7 +10114,8 @@ object Form1: TForm1
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            ExplicitHeight = 57
+            ExplicitWidth = 19
+            ExplicitHeight = 42
           end
         end
       end
@@ -10122,6 +10158,9 @@ object Form1: TForm1
         Width = 568
         Height = 416
         Align = alClient
+        Lines.Strings = (
+          'Start of chat/log:'
+          '')
         ReadOnly = True
         TabOrder = 2
         OnChange = mmohostChange
@@ -10138,6 +10177,8 @@ object Form1: TForm1
     Top = 134
   end
   object svtxtfldlg1: TSaveTextFileDialog
+    FileName = 'Simple Chat Export.txt'
+    Filter = 'Text File|.txt'
     Left = 52
     Top = 262
   end
@@ -10183,6 +10224,13 @@ object Form1: TForm1
     object ReportaIssue1: TMenuItem
       Caption = 'Report a Issue'
       OnClick = ReportaIssue1Click
+    end
+    object Help1: TMenuItem
+      Caption = 'Help'
+      object Cannotconnect1: TMenuItem
+        Caption = 'Cannot connect'
+        OnClick = Cannotconnect1Click
+      end
     end
     object About1: TMenuItem
       Caption = 'About'

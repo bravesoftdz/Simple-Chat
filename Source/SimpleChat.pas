@@ -12,7 +12,9 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.ExtDlgs, System.Win.ScktComp,
   uUsers, Vcl.Menus,
-  ShellAPI;
+  ShellAPI,
+  uStrings,
+  winsock;
 
 type
   TForm1 = class(TForm)
@@ -61,10 +63,15 @@ type
     Exit1: TMenuItem;
     GithubPage1: TMenuItem;
     About1: TMenuItem;
-    lbl3: TLabel;
     chkconnectsendonenter: TCheckBox;
     chkhostsendonenter: TCheckBox;
     ReportaIssue1: TMenuItem;
+    btnsave: TButton;
+    btn1: TButton;
+    btndns: TButton;
+    lbl4: TLabel;
+    Help1: TMenuItem;
+    Cannotconnect1: TMenuItem;
     procedure btn4Click(Sender: TObject);
     procedure btn5Click(Sender: TObject);
     procedure btnconnectconnectClick(Sender: TObject);
@@ -92,9 +99,15 @@ type
     procedure edthostchatKeyPress(Sender: TObject; var Key: Char);
     procedure edtconnectchatsendKeyPress(Sender: TObject; var Key: Char);
     procedure ReportaIssue1Click(Sender: TObject);
+    procedure btnsaveClick(Sender: TObject);
+    procedure btn1Click(Sender: TObject);
+    function GetIP(const HostName: string): string;
+    procedure btndnsClick(Sender: TObject);
+    procedure lbl4Click(Sender: TObject);
+    procedure Cannotconnect1Click(Sender: TObject);
   private
-    usercount : Integer;
-    userid : Integer;
+    usercount, userid : Integer;
+    IPNULL : string;
   public
     { Public declarations }
   end;
@@ -108,9 +121,20 @@ implementation
 
 procedure TForm1.btnconnectconnectClick(Sender: TObject);
 begin
-  clntsckt1.Address := edtip.Text;
-  clntsckt1.Port := StrToInt(edtport.Text);
-  clntsckt1.Active := True;
+  if (UpperCase(edtconnectusername.Text) = 'SERVER') or (UpperCase(edtconnectusername.Text) = 'ADMIN') or (UpperCase(edtconnectusername.Text) = 'HOST')  then
+    ShowMessage('Only the host can use this name...')
+  else
+  begin
+    if (Trim(edtip.Text) <> '') and (Trim(edtport.Text) <> '') and (Trim(edtconnectusername.Text) <> '') then
+      begin
+        clntsckt1.Address := edtip.Text;
+        clntsckt1.Port := StrToInt(edtport.Text);
+        clntsckt1.Active := True;
+        mmoconnectchat.Clear;
+      end
+    else
+      ShowMessage('Please make sure that there is a IP, Port and a Username');
+  end;
 end;
 
 procedure TForm1.btnconnectDisconnectClick(Sender: TObject);
@@ -139,33 +163,38 @@ begin
     begin
       for I := 0 to srvrsckt1.Socket.ActiveConnections-1 do
         begin
-          srvrsckt1.Socket.Connections[I].SendText(edthostusername.Text + ': ' + edthostchat.Text);
+          srvrsckt1.Socket.Connections[I].SendText('[' + TimeToStr(Time) + '] ' + edthostusername.Text + ': ' + edthostchat.Text);
         end;
-      mmohost.Lines.Add(edthostusername.Text + ': ' + edthostchat.Text);
+      mmohost.Lines.Add('[' + TimeToStr(Time) + '] ' + edthostusername.Text + ': ' + edthostchat.Text);
       edthostchat.Clear;
     end
   else
-    ShowMessage('Even if you are the host. You Cannot not send anything. Don''t be shy!');
+    ShowMessage('Even if you are the host. You cannot not send anything. Don''t be shy!');
 end;
 
 procedure TForm1.btnhoststartClick(Sender: TObject);
 begin
-  usercount := 0;
-  srvrsckt1.Port := StrToInt(edthostport.Text);
-  srvrsckt1.Active := True;
+  if (Trim(edthostport.Text) <> '') and (Trim(edthostusername.Text) <> '') then
+    begin
+      usercount := 0;
+      srvrsckt1.Port := StrToInt(edthostport.Text);
+      srvrsckt1.Active := True;
 
-  lblhoststatus.Caption := 'Listening...';
-  lblhoststatus.Font.Color := clLime;
+      lblhoststatus.Caption := 'Listening...';
+      lblhoststatus.Font.Color := clLime;
 
-  edthostport.Enabled := False;
-  chkhostlogchat.Enabled := False;
-  chkhostlogip.Enabled := False;
-  edthostusername.Enabled := False;
-  btnhoststart.Enabled := False;
+      edthostport.Enabled := False;
+      chkhostlogchat.Enabled := False;
+      chkhostlogip.Enabled := False;
+      edthostusername.Enabled := False;
+      btnhoststart.Enabled := False;
 
-  btnhoststop.Enabled := True;
-  edthostchat.Enabled := True;
-  btnhostsend.Enabled := True;
+      btnhoststop.Enabled := True;
+      edthostchat.Enabled := True;
+      btnhostsend.Enabled := True;
+    end
+  else
+    ShowMessage('Please make sure there is a port and a Username');
 end;
 
 procedure TForm1.btnhoststopClick(Sender: TObject);
@@ -186,9 +215,44 @@ begin
   btnhostsend.Enabled := False;
 end;
 
+procedure TForm1.btnsaveClick(Sender: TObject);
+begin
+  if (Trim(edtip.Text) <> '') and (Trim(edtport.Text) <> '') and (Trim(edtconnectusername.Text) <> '') then
+    begin
+      frmstrings.mmo1.Clear;
+      frmstrings.mmo1.Lines.Add(edtconnectusername.Text);
+      frmstrings.mmo1.Lines.Add(edtip.Text);
+      frmstrings.mmo1.Lines.Add(edtport.Text);
+      frmstrings.mmo1.Lines.SaveToFile('C:\Users\Public\Documents\simplechat.ini');
+      ShowMessage('Settings saved!');
+    end
+  else
+    ShowMessage('Please make sure that there is a IP, Port and a Username');
+end;
+
+procedure TForm1.Cannotconnect1Click(Sender: TObject);
+begin
+  ShowMessage('You need to Port-Forward the port you want to use. Google "How to port forward"');
+end;
+
 procedure TForm1.About1Click(Sender: TObject);
 begin
   ShowMessage('Simple chat by Adriaan Boshoff (Inforcer25)');
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  if dlgFont1.Execute then
+    mmohost.Font := dlgFont1.Font;
+end;
+
+procedure TForm1.btndnsClick(Sender: TObject);
+var
+  ip, dns : string;
+begin
+  dns := inputbox('DNS to IP', 'Enter the dns eg. ''noip.ddns.net''','');
+  ip := GetIP(dns);
+  edtip.Text := ip;
 end;
 
 procedure TForm1.btn4Click(Sender: TObject);
@@ -214,6 +278,7 @@ begin
   lblconnectionstatus.Font.Color := clLime;
   btnconnectconnect.Enabled := False;
   btnconnectDisconnect.Enabled := True;
+  btndns.Enabled := False;
 end;
 
 procedure TForm1.clntsckt1Connecting(Sender: TObject; Socket: TCustomWinSocket);
@@ -233,6 +298,7 @@ begin
   lblconnectionstatus.Font.Color := clRed;
   btnconnectconnect.Enabled := True;
   btnconnectDisconnect.Enabled := False;
+  btndns.Enabled := true;
 end;
 
 procedure TForm1.clntsckt1Error(Sender: TObject; Socket: TCustomWinSocket;
@@ -276,13 +342,57 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  sl: TStringList;
+  username, ip : string;
+  port : Integer;
 begin
   Application.Title := 'Simple Chat';
+  ShowMessage('This project is still in development and can change over time.');
+
+  if FileExists('C:\Users\Public\Documents\simplechat.ini') then
+    begin
+      sl := TStringList.Create;
+        try
+          sl.LoadFromFile('C:\Users\Public\Documents\simplechat.ini');
+          username := sl[0];
+          ip := sl[1];
+          port := StrToInt(sl[2]);
+
+          edtconnectusername.Text := username;
+          edtip.Text := ip;
+          edtport.Text := IntToStr(port);
+        finally
+          sl.Free;
+          ShowMessage('Loaded previous settings!');
+        end;
+    end;
+end;
+
+function TForm1.GetIP(const HostName: string): string;
+var
+  WSAData: TWSAData;
+  R: PHostEnt;
+  A: TInAddr;
+begin
+  Result := IPNULL;
+  WSAStartup($101, WSAData);
+  R := Winsock.GetHostByName(PAnsiChar(AnsiString(HostName)));
+  if Assigned(R) then
+  begin
+    A := PInAddr(r^.h_Addr_List^)^;
+    Result := WinSock.inet_ntoa(A);
+  end;
 end;
 
 procedure TForm1.GithubPage1Click(Sender: TObject);
 begin
   OpenURL('https://github.com/Inforcer25/Simple-Chat');
+end;
+
+procedure TForm1.lbl4Click(Sender: TObject);
+begin
+  OpenURL('https://www.noip.com/login');
 end;
 
 procedure TForm1.mmohostChange(Sender: TObject);
@@ -325,7 +435,7 @@ var
   I : Integer;
   msg : string;
 begin
-  msg := Socket.ReceiveText;
+  msg := '[' + TimeToStr(Time) + '] ' + Socket.ReceiveText;
   mmohost.Lines.Add(msg);
 
   for I := 0 to srvrsckt1.Socket.ActiveConnections-1 do
